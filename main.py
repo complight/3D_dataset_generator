@@ -13,10 +13,10 @@ if not dir in sys.path:
    
 import imp
 
-import blender_random3D_generator  
-imp.reload(blender_random3D_generator)
+import BRG_generator  
+imp.reload(BRG_generator)
 
-from blender_random3D_generator import *
+from BRG_generator import *
 
 def main():
     path_M = bpy.data.filepath
