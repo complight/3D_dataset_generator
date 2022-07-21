@@ -61,6 +61,8 @@ def main():
 
     cam_len_c = data['camera']['cam_len']
     rotate_interval_c = data['camera']['rotate_interval']
+    cam_ascend_c = data['camera']['cam_ascend']
+    cam_ascend_interval_c = data['camera']['cam_ascend_interval']
 
     render_compression_c = data['global']['render_compression']
     
@@ -70,38 +72,42 @@ def main():
     mem_tile_c = data['global']['mem_tile']
     sample_rate_c = data['global']['sample_rate']
     
-    generator(
-            cubeSize_c,
-            scaleX_c,
-            scaleY_c,
-            scaleZ_c,
-            light_base1_c,
-            light_base2_c,
-            exTime_c,
-            extrDistanceMax_c,
-            extrDistanceMin_c,
-            randomStep_c,
-            shrink_P_c,
-            shrink_val_c,
-            inset_P_c,
-            inset_thickness_c,
-            offset_P_c,
-            offset_val_c,
-            plane_S_c,
-            node_range_min_c,
-            node_range_max_c,
-            cam_location_X_c,
-            cam_location_Y_c,
-            cam_location_Z_c,
-            cam_len_c,
-            rotate_interval_c,
-            render_compression_c,
-            Eevee_c,
-            Cycles_c,
-            GPU_c,
-            mem_tile_c,
-            sample_rate_c
-            )
+    config_save = generator(
+                        cubeSize_c,
+                        scaleX_c,
+                        scaleY_c,
+                        scaleZ_c,
+                        light_base1_c,
+                        light_base2_c,
+                        exTime_c,
+                        extrDistanceMax_c,
+                        extrDistanceMin_c,
+                        randomStep_c,
+                        shrink_P_c,
+                        shrink_val_c,
+                        inset_P_c,
+                        inset_thickness_c,
+                        offset_P_c,
+                        offset_val_c,
+                        plane_S_c,
+                        node_range_min_c,
+                        node_range_max_c,
+                        cam_location_X_c,
+                        cam_location_Y_c,
+                        cam_location_Z_c,
+                        cam_len_c,
+                        rotate_interval_c,
+                        cam_ascend_c,
+                        cam_ascend_interval_c,
+                        render_compression_c,
+                        Eevee_c,
+                        Cycles_c,
+                        GPU_c,
+                        mem_tile_c,
+                        sample_rate_c
+                        )
+    with open(copy_path, "r") as conf_src, open(config_save, "w") as conf_dest:
+        conf_dest.write(conf_src.read())
 
 if __name__ == "__main__":
     main()

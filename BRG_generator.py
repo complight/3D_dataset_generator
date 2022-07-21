@@ -46,6 +46,8 @@ def generator(
     cam_location_Z_conf, 
     cam_len_conf, 
     rotate_interval_conf, 
+    cam_ascend_conf,
+    cam_ascend_interval_conf,
     render_compression_conf, 
     Eevee_conf, 
     Cycles_conf, 
@@ -87,6 +89,9 @@ def generator(
     cam_location_X = cam_location_X_conf
     cam_location_Y = cam_location_Y_conf
     cam_location_Z = cam_location_Z_conf
+    
+    cam_ascend = cam_ascend_conf
+    cam_ascend_interval = cam_ascend_interval_conf
 
 
     cam_location = (cam_location_X, cam_location_Y, cam_location_Z)
@@ -249,6 +254,8 @@ def generator(
     cam = bpy.data.objects.new('camera', cam_data)
     cam.location = cam_location
     cam.data.lens = cam_len
+    cam.data.clip_end = 10000
+
 
 
     constraint =cam.constraints.new(type='TRACK_TO')
@@ -301,10 +308,15 @@ def generator(
     directory = os.path.dirname(path)
 
     generate_date = strftime("%Y-%m-%d_%H-%M-%S", gmtime())
+    
+    log_name = generate_date + "_log.txt"
+    config_name = generate_date + "_config.json"
     image_path = os.path.join(directory, "output", generate_date, "image_out")
     depth_path = os.path.join(directory, "output", generate_date, "depth_out")
     EXR_path = os.path.join(directory, "output", generate_date, "EXR_out")
     copy_path = os.path.join(directory, "output", generate_date, "scene_copy.blend")
+    log_path = os.path.join(directory, "log", log_name)
+    config_path = os.path.join(directory, "log", config_name)
 
     # image_path = path + "\\image_out"
     # depth_path = path + "\\depth_out"
@@ -336,18 +348,35 @@ def generator(
 
     scene = bpy.context.scene
     scene.camera = cam
-
-    for angle in range(0, 360, rotate_interval):
-        cam_location = cam.location
-        cam.location = rotate(cam_location, rotate_interval, axis=(0,0,1))
-        angle_str = str(angle)
-        image_output_node.file_slots[0].path = "image_" + angle_str + "deg_"
-        Zpath_output_node.file_slots[0].path = "depth_" + angle_str + "deg_"
-        EXR_output_node.file_slots[0].path = "EXR_" + angle_str + "deg_"
-        bpy.ops.render.render(write_still=1)
+    Z_ascend = cam_location_Z
+    
+    for ascend in range(0, cam_ascend + 1, cam_ascend_interval):
+        Z_ascend = Z_ascend + ascend
+        cam_location = (cam_location_X, cam_location_Y, ascend)
+        print(cam_location)
+    
+        for angle in range(0, 360, rotate_interval):
+            cam_location = cam.location
+            cam.location = rotate(cam_location, rotate_interval, axis=(0,0,1))
+            angle_str = str(angle)
+            image_output_node.file_slots[0].path = "image_" + angle_str + "deg_" + "Z" + str(Z_ascend) + "_"
+            Zpath_output_node.file_slots[0].path = "depth_" + angle_str + "deg_" + "Z" + str(Z_ascend) + "_"
+            EXR_output_node.file_slots[0].path = "EXR_" + angle_str + "deg_" + "Z" + str(Z_ascend) + "_"
+            
+            image_name = "\n" + angle_str + " deg - Z " + str(Z_ascend) + ": \n"
+            cam_info = "    location: " + " , ".join(str(x) for x in cam.location) + "\n    rotation: " + " , ".join(str(x) for x in cam.rotation_euler)
+            log_file = open(log_path, 'a')
+            print(image_name)
+            print(cam_info)
+            log_file.write(image_name)
+            log_file.write(cam_info)
+            log_file.close()
+            
+            bpy.ops.render.render(write_still=1)
         
     # bpy.ops.render.render(write_still=1)
     bpy.ops.wm.save_as_mainfile(filepath = copy_path, copy = True)
-
+    
+    return config_path
 # generator()
 

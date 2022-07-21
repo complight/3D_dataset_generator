@@ -28,7 +28,7 @@ The program is executed through Blender's built-in scripting editor. Requires Bl
 ## How to use
 
 ### Run with default settings
-Open `default_void.blend` with Blender, go to  `Scripting` tab and drop `main.py` to the editor window, then run the script. You can also use an empty new scene. Before executing the script, enable Blender console at `Window -> Toggle System Console` to see the system messages. Collect the outputs under `output/` .
+Open `default_void.blend` with Blender, go to  `Scripting` tab and drop `main.py` to the editor window, then run the script. You can also use an empty new scene. Before executing the script, enable Blender console at `Window -> Toggle System Console` to see the system messages. Collect the outputs under `output/` , log and config for each run can be found under `log/` .
 ### Customize your dataset
 `config.json` is available for customization. The `"node":` settings work for the provided setup. For transformed PNG depth map, the values (clipping range) might need to be reconfigured manually after changing the world and camera settings. You can do this by adjusting the `Map Range` node under `Compositing` tab according to the visualized `viewer` node. Or by rerendering the scene without running the script. Note that the visualized depth is diferent from the output PNG. Check [official documents](https://docs.blender.org/manual/en/latest/compositing/types/output/file.html) for more information. The OpenEXR always saves the original Z-path information.
 
@@ -68,8 +68,10 @@ Config file is in `.json` format:
       "cam_location_X" : 140,
       "cam_location_Y" : 0,
       "cam_location_Z" : 36,
-      "cam_len" : 33,			# camera lens
-      "rotate_interval" : 60	# camera rotation interval
+      "cam_len" : 45,				# camera lens
+      "rotate_interval" : 60,		# camera rotation interval
+      "cam_ascend" : 20,			# camera max ascend
+      "cam_ascend_interval" : 10	# camera ascend interval
   },
   "global": {
       "render_compression" : 70,	# render compression rate
