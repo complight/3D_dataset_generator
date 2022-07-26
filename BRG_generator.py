@@ -4,7 +4,7 @@ import numpy as np
 import os
 import sys
 import math
-from time import gmtime, strftime
+import time
 
 
 # append directory
@@ -307,7 +307,7 @@ def generator(
 
     directory = os.path.dirname(path)
 
-    generate_date = strftime("%Y-%m-%d_%H-%M-%S", gmtime())
+    generate_date = strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
     
     log_name = generate_date + "_log.txt"
     config_name = generate_date + "_config.json"
@@ -351,8 +351,9 @@ def generator(
     Z_ascend = cam_location_Z
     
     for ascend in range(0, cam_ascend + 1, cam_ascend_interval):
-        Z_ascend = Z_ascend + ascend
-        cam_location = (cam_location_X, cam_location_Y, ascend)
+        Z_ascend = cam_location_Z + ascend
+        
+        cam.location = (cam_location_X, cam_location_Y, Z_ascend)
         print(cam_location)
     
         for angle in range(0, 360, rotate_interval):

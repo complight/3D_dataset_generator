@@ -32,8 +32,8 @@
       "cam_location_Z" : 50,
       "cam_len" : 45,
       "rotate_interval" : 60,
-	  "cam_ascend" : 20,
-	  "cam_ascend_interval" : 10
+	  "cam_ascend" : 30,
+	  "cam_ascend_interval" : 5
   },
   "global": {
       "render_compression" : 70,
