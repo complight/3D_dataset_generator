@@ -5,6 +5,7 @@ import os
 import sys
 import math
 import time
+from time import strftime
 
 
 # append directory
@@ -45,9 +46,18 @@ def generator(
     cam_location_Y_conf, 
     cam_location_Z_conf, 
     cam_len_conf, 
+    rotate_mode_conf,
     rotate_interval_conf, 
     cam_ascend_conf,
     cam_ascend_interval_conf,
+    VP_mode_conf,
+    VP_camCube_conf,
+    VP_size_x_conf,
+    VP_size_y_conf,
+    VP_dist_x_conf,
+    VP_dist_y_conf,
+    cam_dispersion_conf,
+    cam_nadir_bound_conf,
     render_compression_conf, 
     Eevee_conf, 
     Cycles_conf, 
@@ -258,8 +268,8 @@ def generator(
 
 
 
-    constraint =cam.constraints.new(type='TRACK_TO')
-    constraint.target=base_plane
+    constraint = cam.constraints.new(type='TRACK_TO')
+    constraint.target = base_plane
      
     bpy.context.collection.objects.link(cam)
 
@@ -350,33 +360,146 @@ def generator(
     scene.camera = cam
     Z_ascend = cam_location_Z
     
-    for ascend in range(0, cam_ascend + 1, cam_ascend_interval):
-        Z_ascend = cam_location_Z + ascend
-        
-        cam.location = (cam_location_X, cam_location_Y, Z_ascend)
-        print(cam_location)
+    rotate_mode = rotate_mode_conf
+    if rotate_mode:
     
-        for angle in range(0, 360, rotate_interval):
-            cam_location = cam.location
-            cam.location = rotate(cam_location, rotate_interval, axis=(0,0,1))
-            angle_str = str(angle)
-            image_output_node.file_slots[0].path = "image_" + angle_str + "deg_" + "Z" + str(Z_ascend) + "_"
-            Zpath_output_node.file_slots[0].path = "depth_" + angle_str + "deg_" + "Z" + str(Z_ascend) + "_"
-            EXR_output_node.file_slots[0].path = "EXR_" + angle_str + "deg_" + "Z" + str(Z_ascend) + "_"
+        for ascend in range(0, cam_ascend + 1, cam_ascend_interval):
+            Z_ascend = cam_location_Z + ascend
             
-            image_name = "\n" + angle_str + " deg - Z " + str(Z_ascend) + ": \n"
-            cam_info = "    location: " + " , ".join(str(x) for x in cam.location) + "\n    rotation: " + " , ".join(str(x) for x in cam.rotation_euler)
-            log_file = open(log_path, 'a')
-            print(image_name)
-            print(cam_info)
-            log_file.write(image_name)
-            log_file.write(cam_info)
-            log_file.close()
-            
-            bpy.ops.render.render(write_still=1)
+            cam.location = (cam_location_X, cam_location_Y, Z_ascend)
+            print(cam_location)
         
-    # bpy.ops.render.render(write_still=1)
-    bpy.ops.wm.save_as_mainfile(filepath = copy_path, copy = True)
+            for angle in range(0, 360, rotate_interval):
+                cam_location = cam.location
+                cam.location = rotate(cam_location, rotate_interval, axis=(0,0,1))
+                angle_str = str(angle)
+                image_output_node.file_slots[0].path = "image_" + angle_str + "deg_" + "Z" + str(Z_ascend) + "_"
+                Zpath_output_node.file_slots[0].path = "depth_" + angle_str + "deg_" + "Z" + str(Z_ascend) + "_"
+                EXR_output_node.file_slots[0].path = "EXR_" + angle_str + "deg_" + "Z" + str(Z_ascend) + "_"
+                
+                image_name = "\n" + angle_str + " deg - Z " + str(Z_ascend) + ": \n"
+                cam_info = ("    location: " + " , ".join(str(x) for x in cam.matrix_world.to_translation()) +
+                            "\n    rotation: " + " , ".join(str(x) for x in cam.matrix_world.to_euler('XYZ')))
+                # cam.rotation_euler
+                log_file = open(log_path, 'a')
+                print(image_name)
+                print(cam_info)
+                log_file.write(image_name)
+                log_file.write(cam_info)
+                log_file.close()
+                
+                bpy.ops.render.render(write_still=1)
+            
+        # bpy.ops.render.render(write_still=1)
+        bpy.ops.wm.save_as_mainfile(filepath = copy_path, copy = True)
+
+    VP_mode = VP_mode_conf
+    VP_size_x = VP_size_x_conf
+    VP_size_y = VP_size_y_conf
+    
+    VP_dist_x = VP_dist_x_conf
+    VP_dist_y = VP_dist_y_conf
+    
+    cam_dispersion = cam_dispersion_conf
+    cam_nadir_bound = cam_nadir_bound_conf
+    
+    if VP_mode:
+        bpy.ops.mesh.primitive_plane_add(
+            size = 1,
+            calc_uvs=True,
+            enter_editmode=False,
+            align='WORLD', 
+            location=(0, 0, 0), 
+            scale=(scaleX*1, scaleY*1, scaleZ*1)
+            )
+        VP_plane = bpy.context.active_object
+        
+        VP_constraint = cam.constraints.new(type='SHRINKWRAP')
+        VP_constraint.target = VP_plane
+        VP_cam_count = 0
+        
+        if VP_dist_y == 0:
+            VP_plane.rotation_euler[1] = math.radians(90)
+            VP_plane.location[0] = VP_dist_x
+            bpy.context.object.scale[0] = VP_size_x
+            bpy.context.object.scale[1] = VP_size_y
+            
+            for z in range(cam_nadir_bound, int(VP_size_x/2)+1, cam_dispersion):
+                for y in range(int(-VP_size_y/2), int(VP_size_y/2)+1, cam_dispersion):
+                    cam.location = (VP_dist_x, y, z)
+                    image_output_node.file_slots[0].path = "image_"  + "pos_" + str(VP_cam_count) + "_"
+                    Zpath_output_node.file_slots[0].path = "depth_"  + "pos_" + str(VP_cam_count) + "_"
+                    EXR_output_node.file_slots[0].path = "EXR_" + "pos_" + str(VP_cam_count) + "_"
+
+                    image_name = "\ncamera No." + str(VP_cam_count) + ": \n"
+                    cam_info = ("    location: " + " , ".join(str(x) for x in cam.matrix_world.to_translation()) +
+                                "\n    rotation: " + " , ".join(str(x) for x in cam.matrix_world.to_euler('XYZ')))
+                    # cam.rotation_euler
+                    log_file = open(log_path, 'a')
+                    print(image_name)
+                    print(cam_info)
+                    log_file.write(image_name)
+                    log_file.write(cam_info)
+                    log_file.close()
+
+                    bpy.ops.render.render(write_still=1)
+                    
+                    VP_cam_count = VP_cam_count + 1
+                    
+                    if VP_camCube_conf:
+                        # represents cam position for debugging
+                        bpy.ops.mesh.primitive_cube_add(
+                            size= 3,
+                            enter_editmode=False, 
+                            align='WORLD', 
+                            location=(VP_dist_x, y, z),
+                            scale=(scaleX, scaleY, scaleZ)
+                            )
+                    
+                VP_cam_count = VP_cam_count + 1
+                    
+                    
+        elif VP_dist_x == 0:
+            VP_plane.rotation_euler[2] = math.radians(90)
+            VP_plane.rotation_euler[1] = math.radians(90)
+            VP_plane.location[1] = VP_dist_y
+            bpy.context.object.scale[0] = VP_size_x
+            bpy.context.object.scale[1] = VP_size_y
+            
+            for z in range(cam_nadir_bound, int(VP_size_x/2)+1, cam_dispersion):
+                for x in range(int(-VP_size_y/2), int(VP_size_y/2)+1, cam_dispersion):
+                    cam.location = (x, VP_dist_y, z)
+                    image_output_node.file_slots[0].path = "image_"  + "pos_" + str(VP_cam_count) + "_"
+                    Zpath_output_node.file_slots[0].path = "depth_"  + "pos_" + str(VP_cam_count) + "_"
+                    EXR_output_node.file_slots[0].path = "EXR_" + "pos_" + str(VP_cam_count) + "_"
+
+                    image_name = "\ncamera No." + str(VP_cam_count) + ": \n"
+                    cam_info = ("    location: " + " , ".join(str(x) for x in cam.matrix_world.to_translation()) +
+                                "\n    rotation: " + " , ".join(str(x) for x in cam.matrix_world.to_euler('XYZ')))
+                    # cam.rotation_euler
+                    log_file = open(log_path, 'a')
+                    print(image_name)
+                    print(cam_info)
+                    log_file.write(image_name)
+                    log_file.write(cam_info)
+                    log_file.close()
+
+                    bpy.ops.render.render(write_still=1)
+                    
+                    VP_cam_count = VP_cam_count + 1
+                    
+                    if VP_camCube_conf:
+                        # represents cam position for debugging
+                        bpy.ops.mesh.primitive_cube_add(
+                            size= 3,
+                            enter_editmode=False, 
+                            align='WORLD', 
+                            location=(x, VP_dist_y, z),
+                            scale=(scaleX, scaleY, scaleZ)
+                            )
+                    
+                VP_cam_count = VP_cam_count + 1
+        bpy.ops.wm.save_as_mainfile(filepath = copy_path, copy = True)
     
     return config_path
 # generator()

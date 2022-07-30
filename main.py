@@ -58,14 +58,23 @@ def main():
     cam_location_X_c = data['camera']['cam_location_X']
     cam_location_Y_c = data['camera']['cam_location_Y']
     cam_location_Z_c = data['camera']['cam_location_Z']
-
     cam_len_c = data['camera']['cam_len']
-    rotate_interval_c = data['camera']['rotate_interval']
-    cam_ascend_c = data['camera']['cam_ascend']
-    cam_ascend_interval_c = data['camera']['cam_ascend_interval']
+    
+    rotate_mode_c = data['rotate']['rotate_mode']
+    rotate_interval_c = data['rotate']['rotate_interval']
+    cam_ascend_c = data['rotate']['cam_ascend']
+    cam_ascend_interval_c = data['rotate']['cam_ascend_interval']
+    
+    VP_mode_c = data['view_plane']['VP_mode']
+    VP_camCube_c = data['view_plane']['VP_camCube']
+    VP_size_x_c = data['view_plane']['VP_size_x']
+    VP_size_y_c = data['view_plane']['VP_size_y']
+    VP_dist_x_c = data['view_plane']['VP_dist_x']
+    VP_dist_y_c = data['view_plane']['VP_dist_y']
+    cam_dispersion_c = data['view_plane']['cam_dispersion']
+    cam_nadir_bound_c = data['view_plane']['cam_nadir_bound']
 
     render_compression_c = data['global']['render_compression']
-    
     Eevee_c = data['global']['Eevee']
     Cycles_c = data['global']['Cycles']
     GPU_c = data['global']['GPU']
@@ -96,9 +105,18 @@ def main():
                         cam_location_Y_c,
                         cam_location_Z_c,
                         cam_len_c,
+                        rotate_mode_c,
                         rotate_interval_c,
                         cam_ascend_c,
                         cam_ascend_interval_c,
+                        VP_mode_c,
+                        VP_camCube_c,
+                        VP_size_x_c,
+                        VP_size_y_c,
+                        VP_dist_x_c,
+                        VP_dist_y_c,
+                        cam_dispersion_c,
+                        cam_nadir_bound_c,
                         render_compression_c,
                         Eevee_c,
                         Cycles_c,
