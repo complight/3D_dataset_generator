@@ -1,47 +1,58 @@
-        
-    # variables for cube
-    cubeSize = 3            # cube size, blender default 2
-    scaleX = 1              # x sacel in object creation
-    scaleY = 1              # y sacel in object creation
-    scaleZ = 1              # z sacel in object creation
-
-    # light
-    light_base1 = 200 #
-    light_base2 = 300 #
-
-    # position
-    arr = np.random.randint(-100,100,size = (300,3))
-
-    # variables for the itteration
-    exTime = 7       		# time of extrusion
-    extrDistanceMax = 15    # max distance of extrusion
-    extrDistanceMin = 2     # min distance of extrusion
-    randomStep = 3          # step between values in random
-    shrink_P = 0            # 0
-    shrink_val = 2          # 2
-    inset_P = 10
-    inset_thickness = 1
-    offset_P = 90
-    offset_val = 1
-    plane_S = 3000
-
-    # Z-path ranger
-    node_range_min = 50
-    node_range_max = 200
-
-    cam_location_X = 140
-    cam_location_Y = 0
-    cam_location_Z = 36
-
-
-    cam_location = (cam_location_X, cam_location_Y, cam_location_Z)
-    cam_len = 33
-    rotate_interval = 60
-
-    render_compression = 70
-    
-    Eevee = True
-    Cycles = False
-    GPU = True
-	mem_tile = 2048
-    sample_rate = 1024
+{
+	"cube": {
+		"cubeSize" : 3,
+		"scaleX" : 1,
+		"scaleY" : 1,
+		"scaleZ" : 1
+	},
+	"light": {
+		"light_base1" : 200,
+		"light_base2" : 300
+	},
+	"generation": {
+		"exTime" : 7,
+		"extrDistanceMax" : 15,
+		"extrDistanceMin" : 2,
+		"randomStep" : 3,
+		"shrink_P" : 0,
+		"shrink_val" : 2,
+		"inset_P" : 10,
+		"inset_thickness" : 1,
+		"offset_P" : 90,
+		"offset_val" : 1,
+		"plane_S" : 3000
+	},
+	"node": {
+		"node_range_min" : 50,
+		"node_range_max" : 200
+	},
+	"camera": {
+		"cam_location_X" : 140,
+		"cam_location_Y" : 0,
+		"cam_location_Z" : 50,
+		"cam_len" : 45
+	},
+	"rotate": {
+		"rotate_mode" : true,
+		"rotate_interval" : 30,
+		"cam_ascend" : 30,
+		"cam_ascend_interval" : 10
+	},
+	"view_plane": {
+		"VP_mode" : false,
+		"VP_size_x" : 150,
+		"VP_size_y" : 300,
+		"VP_dist_x" : 150,
+		"VP_dist_y" : 0,
+		"cam_dispersion" : 30,
+		"cam_nadir_bound" : 10
+	},
+	"global": {
+		"render_compression" : 70,
+		"Eevee" : true,
+		"Cycles" : false,
+		"GPU" : true,
+		"mem_tile" : 2048,
+		"sample_rate" : 1024
+	}
+}
