@@ -21,10 +21,10 @@ The program is executed through Blender's built-in scripting editor. Requires Bl
 
 ## Features
 
-- An easy to navigate structure.
-- A `json` configuration file to easily customize the program.
-- The program generates a randomized scene. Filled with configurable random extrusion/shrink/inset/offset with random texture and randomized lighting.
-- Rotate & orbit camera around the center of the scene to capture 360 deg scan.
+
+- A `json` configuration file to customize the program.
+- The program generates a randomized scene. Filled with configurable random edited models (extrusion/shrink/inset/offset) with random texture and randomized lighting.
+- Rotate & orbit camera around the center of the scene to capture 360 deg scan. Or view plane mode to constraint camera to the defined viewplane.
 - A composited node tree is available for customize rendering and output configurations.
 - The program outputs the original PNG image, corresponding PNG depth map and OpenEXR depth map. And saves a copy of the scene.
 
@@ -42,6 +42,9 @@ Config file is in `.json` format:
 {
     "cube": {
       "cubeSize" : 3,			# cube size, blender default 2
+      "cube_only" : false,      # only generate cube
+      "cube_amount" : 50,       # percentage of cube (if enable other models)
+      "model_monkey" : false,   # generate blender monkey
       "scaleX" : 1,				# x sacel in object creation
       "scaleY" : 1,				# y sacel in object creation
       "scaleZ" : 1				# z sacel in object creation
@@ -51,7 +54,7 @@ Config file is in `.json` format:
       "light_base2" : 300
     },
     "generation": {
-      "exTime" : 7,				# time of extrusion
+      "exTime" : 7,				# time of extrusion (cube only)
       "extrDistanceMax" : 15,	# max distance of extrusion
       "extrDistanceMin" : 2,	# min distance of extrusion
       "randomStep" : 3,			# step between values in random

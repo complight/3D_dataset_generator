@@ -30,6 +30,9 @@ def main():
 
     # cube
     cubeSize_c = data['cube']['cubeSize']           # cube size, blender default 2
+    cube_only_c = data['cube']['cube_only']
+    cube_amount_c = data['cube']['cube_amount']
+    model_monkey_c = data['cube']['model_monkey']
     scaleX_c = data['cube']['scaleX']               # x sacel in object creation
     scaleY_c = data['cube']['scaleY']               # y sacel in object creation
     scaleZ_c = data['cube']['scaleZ']               # z sacel in object creation
@@ -83,6 +86,9 @@ def main():
     
     config_save = generator(
                         cubeSize_c,
+                        cube_only_c,
+                        cube_amount_c,
+                        model_monkey_c,
                         scaleX_c,
                         scaleY_c,
                         scaleZ_c,
