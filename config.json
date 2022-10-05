@@ -1,6 +1,9 @@
 {
 	"cube": {
 		"cubeSize" : 3,
+		"cube_only" : false,
+        "cube_amount" : 50,
+        "model_monkey" : false,
 		"scaleX" : 1,
 		"scaleY" : 1,
 		"scaleZ" : 1
@@ -14,7 +17,7 @@
 		"extrDistanceMax" : 15,
 		"extrDistanceMin" : 2,
 		"randomStep" : 3,
-		"shrink_P" : 0,
+		"shrink_P" : 3,
 		"shrink_val" : 2,
 		"inset_P" : 10,
 		"inset_thickness" : 1,

@@ -23,7 +23,10 @@ from utils import *
 
 
 def generator(
-    cubeSize_conf, 
+    cubeSize_conf,
+    cube_only_conf,
+    cube_amount_conf,
+    model_monkey_conf,
     scaleX_conf, 
     scaleY_conf, 
     scaleZ_conf, 
@@ -185,7 +188,67 @@ def generator(
     faceCount =  6
 
     for i in range(len(arr)):
+        
+        cube_only = cube_only_conf
+        misc_amount = 100 - cube_amount_conf
+        model_monkey = model_monkey_conf
+        
+        if random.randint(0,100) < misc_amount and not cube_only:
+            
+            if model_monkey:
+                model_select = random.randint(0,5)
+            else:
+                model_select = random.randint(0,4)
+                
+            model_x_scale = random.randint(cubeSize,cubeSize+1)
+            model_y_scale = random.randint(cubeSize,cubeSize+1)
+            model_z_scale = random.randint(cubeSize,extrDistanceMax+1)
+            match model_select:
+                case 1:
+                    bpy.ops.mesh.primitive_ico_sphere_add(
+                        enter_editmode=False, 
+                        align='WORLD', 
+                        location=(arr[i][0], arr[i][1], (abs(arr[i][2])%7)), 
+                        scale=(model_z_scale, model_z_scale, model_z_scale))
+                case 2:
+                    bpy.ops.mesh.primitive_uv_sphere_add(
+                        radius=1, 
+                        enter_editmode=False, 
+                        align='WORLD', 
+                        location=(0, 0, 0), 
+                        scale=(model_x_scale, model_x_scale, model_z_scale))
+                case 3:
+                    bpy.ops.mesh.primitive_cylinder_add(
+                        enter_editmode=False, 
+                        align='WORLD', 
+                        location=(arr[i][0], arr[i][1], (abs(arr[i][2])%7)), 
+                        scale=(model_x_scale, model_x_scale, model_z_scale))
+                case 4:
+                    bpy.ops.mesh.primitive_cone_add(
+                        enter_editmode=False, 
+                        align='WORLD', 
+                        location=(arr[i][0], arr[i][1], (abs(arr[i][2])%7)), 
+                        scale=(model_x_scale, model_x_scale, model_z_scale))
+                case 5:
+                    bpy.ops.mesh.primitive_monkey_add(
+                        size=model_z_scale, 
+                        enter_editmode=False, 
+                        align='WORLD', 
+                        location=(arr[i][0], arr[i][1], (abs(arr[i][2])%7)), 
+                        scale=(model_z_scale, model_z_scale, model_z_scale))
+                        
+            obj = bpy.context.active_object
+            
+            matName = "model_mat" + str(i)
+            new_mat = bpy.data.materials.new(matName)
+            new_mat.use_nodes = True
+            principled = new_mat.node_tree.nodes['Principled BSDF']
+            principled.inputs['Base Color'].default_value = (get_random_color())
+            obj.data.materials.append(new_mat)
+            
+            continue
 
+        
         # create a cube and go in to edit mode
         bpy.ops.mesh.primitive_cube_add(
             size= cubeSize, 
@@ -345,6 +408,7 @@ def generator(
     EXR_output_node.format.color_mode = "RGB"  # default is "BW"
     EXR_output_node.format.color_depth = "16"  # default is 8
     EXR_output_node.format.compression = 100     # default is 15
+    EXR_output_node.format.use_zbuffer = True
     EXR_output_node.base_path = EXR_path
     links.new(rl.outputs[2], EXR_output_node.inputs[0])
 
